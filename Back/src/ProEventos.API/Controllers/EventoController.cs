@@ -1,7 +1,10 @@
 using System.Data.Common;
 using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ProEventos.API.Data;
 using ProEventos.API.Models;
+using SQLitePCL;
 
 namespace ProEventos.API.Controllers;  
 
@@ -10,14 +13,23 @@ namespace ProEventos.API.Controllers;
 
 public class EventoController : ControllerBase
 {
+    private readonly DataContext context;
+
+    public EventoController(DataContext context)
+    {
+            this.context = context;
+    }
+
     [HttpGet]
     public IEnumerable<Evento> Get(){
-        return _evento;
+        return this.context.Eventos;
     }
 
     [HttpGet("{id}")]
-    public IEnumerable<Evento> GetById(int id){
-        return _evento.Where(evento => evento.EventoId == id);
+    public Evento GetById(int id){
+        return this.context.Eventos.FirstOrDefault(
+            evento => evento.EventoId == id
+            );
     }
 
     [HttpPost]
@@ -26,30 +38,8 @@ public class EventoController : ControllerBase
         return "Exemplo de Post";
     }
 
-
-    public EventoController()
-    {
-    }
-
     public IEnumerable<Evento> _evento = new Evento[] {
-            new Evento(){
-                EventoId = 1,
-                Tema = "Angular 11 e .Net 6",
-                Local = "Belo Horizonte",
-                Lote = "1° Lote",
-                QtdPessoas = 250,
-                DataEvento = DateTime.Now.AddDays(2).ToString(),
-                ImagemURL = "foto.png"
-            },
-            new Evento(){
-                EventoId = 2,
-                Tema = "Angular 11 e Suas Novidades",
-                Local = "São Paulo",
-                Lote = "2° Lote",
-                QtdPessoas = 150,
-                DataEvento = DateTime.Now.AddDays(2).ToString("dd/MM/yyyy"),
-                ImagemURL = "foto1.png"
-            }
+
         };
-    }
+}
 
